@@ -54,6 +54,12 @@ and then run the following to find the full pod ID
 kubectl get pod <pod-name> -o yaml
 ```
 
+Or nicer:
+
+```bash
+kubectl get pod <pod-name> -o jsonpath='{.metadata.uid}'
+```
+
 Take the UID of the pod and then, in the shell you have opened into the Node, run:
 
 ```bash
