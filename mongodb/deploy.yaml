@@ -40,5 +40,5 @@ spec:
               memory: "128Mi"
       volumes:
         - name: mongo-volume
-          hostPath:
-            path: "/data"
+          persistentVolumeClaim:
+            claimName: "mongo-pvc"

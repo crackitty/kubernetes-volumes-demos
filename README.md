@@ -122,3 +122,94 @@ And then scale it back up to 1 and see that the Pod ID has changed, but when you
 port-forward to the service again and refresh the db, you see the data there.
 
 This works fine when we are dealing with just one Node... but it's not enough.
+
+## Persistent Volumes
+
+Up until now, we've been dealing with **Ephemeral Volumes** which means that if
+the container, pod or node that holds the data gets deleted, then the volume is
+deleted with it.
+
+Now we have the more real world case where we have multiple Nodes (worker nodes)
+that the Kubernetes scheduler will schedule Pods on at will and we may not know
+which Node the Pod will end up on because it decides this based on available
+resources. So now, imagine the case where we have the data stored on Node 1
+using hostPath and our new Pod (replica 2 for example) gets scheduled on Node 2.
+First of all, the Pod on Node 2 cannot access the data on Node 1, but even
+worse, if Node 1 fails for some reason, then all our db data is lost.
+
+So the solution is to move the storge out further, to the cloud, or an external
+NFS disk etc. i.e. on a machine that is not a Node in your cluster. That way, failures
+in the Nodes cannot result in the data being lost.
+
+The tools we will have to do this are
+
+- Persistent Volumes
+- Persistent Volume Claims
+- Storage Classes
+
+We will look at each of these in turn as we go through a real world scenario.
+
+We will create a Persistent Volume first to see how it works
+
+We can get the API version of the Persistent Volume by running the following
+
+```bash
+kubectl api-resources | grep Persistent
+```
+
+The accessModes available are:
+
+- ReadWriteMany
+- ReadWriteOnce
+- ReadOnlyOnce
+- ReadOnlyMany
+- ReadWriteOncePod
+
+So now we can create this PV in the cluster
+
+```bash
+kubectl apply -f mongodb/pv.yaml
+```
+
+Now we have a PV created in our cluster so we have a way to store data
+outside our nodes. How do we use this in our MongoDB application?
+
+## Persistent Volume Claim
+
+We use this to ask kubernetes can it match us with a PV that satisfies
+our needs for **capacity of 5Gi** and **accessMode of RWX**. These are
+the main two criteria Kubernetes uses in our example to match. There
+can and are other criteria, but for now it's enough to consider these
+as the matching criteria.
+
+We can create the PVC now...
+
+```bash
+kubectl apply -f mongodb/pv.yaml
+```
+
+We also need to update the deployment to use this PVC. So we changed the
+deployment to use the new PVC and we can apply that change
+
+```bash
+kubectl apply -f mongodb/deploy.yaml
+```
+
+If you check the Pods now you'll see that the new Pod hasn't
+come up properly - so use `kubectl describe` to investigate.
+
+Sometimes the old hostPath doesn't detach from the Pod and
+we end up with phantom Pods, so to fix this, we can scale
+down the replicas to 0 and back up to 1.
+
+So, in this scenario, the Deployments are created by the
+developers and the PV's would be created by some admin on
+request of a developer and then the developer can create
+a PVC which will match and bind to it.
+
+But this is a bit of a hassle - we don't want to have to
+sit waiting for requests for PV's. There must be a more
+dynamic way to do this so develpers are free to work away
+without waiting on a PV to be manually provisioned.
+
+There is...
