@@ -40,4 +40,5 @@ spec:
               memory: "128Mi"
       volumes:
         - name: mongo-volume
-          emptyDir: {}
+          hostPath:
+            path: "/data"
