@@ -28,17 +28,17 @@ spec:
               value: "password"
           volumeMounts:
             - name: mongo-volume
-              mountPath: "/data/db"
+              mountPath: /data/db
           ports:
             - containerPort: 27017
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: 250m
+              memory: 1Gi
             limits:
-              cpu: "500m"
-              memory: "128Mi"
+              cpu: 500m
+              memory: 2Gi
       volumes:
         - name: mongo-volume
           hostPath:
-            path: "/data"
+            path: /data
