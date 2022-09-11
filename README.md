@@ -46,6 +46,29 @@ Pod level so if the container restarts, we will still have our data.
 
 So, this way, the data is available for as long as the Pod is alive.
 
+Apply the changed deployment
+
+```yaml
+      volumes:
+        - name: mongo-volume
+          emptyDir: {}
+```
+
+By running
+
+```bash
+kubectl apply -f mongodb/deploy.yaml
+```
+
+After doing this we can demo the same process of 
+
+- `port-forwarding`
+- connecting `Mongo Compass` and adding data
+- exec into the pod
+- kill the mongodb process
+- see the new container created
+- check if `Mongo Compass` still shows it
+
 > Note: The data is being stored on the Node where the Pod is running
 
 We can SSH into the Node - we're running Kind here, so we need to connect using docker
