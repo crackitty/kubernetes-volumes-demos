@@ -212,4 +212,25 @@ sit waiting for requests for PV's. There must be a more
 dynamic way to do this so develpers are free to work away
 without waiting on a PV to be manually provisioned.
 
-There is...
+There are...
+
+## Storage Classes
+
+Storage classes allow us to use a Storage Provisioner to do
+what a human would normally do on our behalf. i.e. create the
+PV for us based on certain requirements.
+
+Usually, though, this manual process is something we want to
+avoid (tickets and the like).
+
+So Storage classses allow us to have dynamic storage. Storage
+Classes use provisioners to to the work for them. See the
+documentation for the list of provioners. In our case, we
+currently have only one storage class we can use, "tanzu-stp"
+which is a CSI provisioner from vsphere. Unfortunately it's
+not configured to allow using RWX so our demos can only
+use RWO.
+
+You can run these on a Minikube cluster and demo the functionality.
+However, they also don't come with RWX available so you would
+have to add something like an NFS storage class.
