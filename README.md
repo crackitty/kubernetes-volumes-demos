@@ -17,6 +17,25 @@ kubectl apply -f mongodb/deploy.yaml
 kubectl apply -f mongodb/service.yaml
 ```
 
+## Step 1
+
+We'll show now that by restarting the container, we lose our data.
+
+We can exec into our Pod
+
+```bash
+k exec -it mongo-5b9fff8dc8-vbk5f -- bash
+```
+
+And then kill the `mongodb` process by running `kill 1`
+
+this kicks us out and we can then check `k get pods` and see that it's not a new Pod, but there
+was 1 container restart.
+
+Port forward again to Mongo and check if the data is there... it's GONE!
+
+Go back to the slides
+
 ## Volumes
 
 Before we showed that we can add data to our application, but if we kill the container
