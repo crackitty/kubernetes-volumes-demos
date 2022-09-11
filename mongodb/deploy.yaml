@@ -33,12 +33,12 @@ spec:
             - containerPort: 27017
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: 250m
+              memory: 1Gi
             limits:
-              cpu: "500m"
-              memory: "128Mi"
+              cpu: 500m
+              memory: 2Gi
       volumes:
         - name: mongo-volume
           persistentVolumeClaim:
-            claimName: "mongo-pvc"
+            claimName: "demo-mongo-pvc"
