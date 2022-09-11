@@ -71,6 +71,11 @@ After doing this we can demo the same process of
 
 > Note: The data is being stored on the Node where the Pod is running
 
+> Note also: if we delete the Pod, then the data is gone - since the emptyDir
+> volume is owned by the Pod and is removed when the Pod is removed.
+
+## If using KIND
+
 We can SSH into the Node - we're running Kind here, so we need to connect using docker
 
 ```bash
