@@ -17,7 +17,7 @@ kubectl apply -f mongodb/deploy.yaml
 kubectl apply -f mongodb/service.yaml
 ```
 
-## Step 1
+## Step 1 - emptyDir
 
 We'll show now that by restarting the container, we lose our data.
 
@@ -46,7 +46,7 @@ Pod level so if the container restarts, we will still have our data.
 
 So, this way, the data is available for as long as the Pod is alive.
 
-Apply the changed deployment
+We updateg the deployment and added
 
 ```yaml
       volumes:
@@ -54,7 +54,7 @@ Apply the changed deployment
           emptyDir: {}
 ```
 
-By running
+Now run:
 
 ```bash
 kubectl apply -f mongodb/deploy.yaml
@@ -63,54 +63,13 @@ kubectl apply -f mongodb/deploy.yaml
 After doing this we can demo the same process of 
 
 - `port-forwarding`
-- connecting `Mongo Compass` and adding data
+- connecting `MongoDB Compass` and adding data
 - exec into the pod
 - kill the mongodb process
 - see the new container created
-- check if `Mongo Compass` still shows it
+- check if `MongoDB Compass` still shows it
 
 > Note: The data is being stored on the Node where the Pod is running
 
 > Note also: if we delete the Pod, then the data is gone - since the emptyDir
 > volume is owned by the Pod and is removed when the Pod is removed.
-
-## If using KIND
-
-We can SSH into the Node - we're running Kind here, so we need to connect using docker
-
-```bash
-docker exec -it mongo-demo-worker sh
-```
-
-If you look in the folder
-
-```bash
-ls /var/lib/kubelet/pods
-```
-
-You'll see the hashes of all the pods that were running on the node. To find our Pod
-we can run
-
-```bash
-kubectl get pod
-```
-
-and then run the following to find the full pod ID
-
-```bash
-kubectl get pod <pod-name> -o yaml
-```
-
-Or nicer:
-
-```bash
-kubectl get pod <pod-name> -o jsonpath='{.metadata.uid}'
-```
-
-Take the UID of the pod and then, in the shell you have opened into the Node, run:
-
-```bash
-ls /var/lib/kubelet/pods/<POD-UID>/volumes/kubernetes.io~empty-dir/mongo-volume
-```
-
-and you'll see the contents of the MongoDB data directory that was mounted
